@@ -17,7 +17,7 @@ int rbuflogd_consume(rbuf_t * rbuf, char * out_msg) {
   // read and save message: 
   snprintf(out_msg, RBUF_MSG_MAX_LEN, "%s", rbuf->data[tail]);
 
-  // todo: write out msg to a log file
+  printf("Read from buffer: \"%s\" (tail -> %zu)\n", out_msg, tail);
 
   // update tail
   atomic_store_explicit(
@@ -29,7 +29,7 @@ int rbuflogd_consume(rbuf_t * rbuf, char * out_msg) {
 }
 
 int rbuflogd_write_log(const char * log_msg) {
-  
+
   if(log_file == NULL) {
     log_file = fopen(LOG_FILE_PATH, "a");
     if (log_file == NULL) {

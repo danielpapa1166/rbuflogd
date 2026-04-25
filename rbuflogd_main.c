@@ -1,3 +1,5 @@
+#define _DEFAULT_SOURCE
+
 #include "rbuflogd_common_types.h"
 #include "rbuflogd_consumer.h"
 #include "rbuflogd_shmem.h"
@@ -30,15 +32,12 @@ int main() {
 
 
   while(!terminate_app) {
-    sleep(1); 
-    printf("Consumer is running...\n");
-
     const int res = rbuflogd_consume(rbuf, log_msg); 
     if (res == 0) {
       printf("Consumed log: %s\n", log_msg);
       rbuflogd_write_log(log_msg);
     }
-    
+    usleep(10); 
   }
 
   rbuflogd_cleanup_shmem();

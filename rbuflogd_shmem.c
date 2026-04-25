@@ -16,7 +16,11 @@ int rbuflogd_init_shmem(rbuf_t ** out_rbuf) {
   }
 
   // Set size of shared memory: 
-  ftruncate(shmem_fd, sizeof(rbuf_t)); 
+  const int res = ftruncate(
+    shmem_fd, sizeof(rbuf_t)); 
+  if (res == -1) {
+    return -1; // Failed to set size of shared memory
+  }
 
   // Map shared memory to process address space
   rbuf_t * rbuf = mmap(

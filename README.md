@@ -1,1 +1,2 @@
 # rbuflogd
+*.log

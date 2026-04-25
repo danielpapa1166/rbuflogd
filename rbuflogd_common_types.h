@@ -3,7 +3,7 @@
 
 #include <stdatomic.h>
 
-#define RBUF_SIZE               (1000) 
+#define RBUF_SIZE               (1024) 
 #define RBUF_MSG_MAX_LEN        256
 #define SHMEM_NAME              "/rbuflogd_shmem"
 
