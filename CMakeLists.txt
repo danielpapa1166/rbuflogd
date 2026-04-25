@@ -5,16 +5,66 @@ project(rbuflogd LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+find_library(RT_LIBRARY rt)
+
+set(RBUFLOGD_PUBLIC_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+add_library(rbuflogd_common STATIC
+  src/common/shmem.c
+)
+
+target_include_directories(rbuflogd_common
+  PUBLIC
+    ${RBUFLOGD_PUBLIC_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/common
+)
+
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(rbuflogd_common PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+  )
+endif()
+
+if(RT_LIBRARY)
+  target_link_libraries(rbuflogd_common PRIVATE ${RT_LIBRARY})
+endif()
+
+add_library(rbuflogd_producer SHARED
+  src/producer/producer.c
+)
+
+target_include_directories(rbuflogd_producer
+  PUBLIC
+    ${RBUFLOGD_PUBLIC_INCLUDE_DIR}
+)
+
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(rbuflogd_producer PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+  )
+endif()
+
+if(RT_LIBRARY)
+  target_link_libraries(rbuflogd_producer PRIVATE ${RT_LIBRARY})
+endif()
 
 add_executable(rbuflogd
-  rbuflogd_main.c
-  rbuflogd_consumer.c
-  rbuflogd_shmem.c
+  src/daemon/main.c
+  src/daemon/consumer.c
+  src/daemon/log_sink.c
 )
 
 target_include_directories(rbuflogd
   PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${RBUFLOGD_PUBLIC_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/common
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/daemon
 )
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
@@ -25,20 +75,15 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
   )
 endif()
 
-# shm_open can require librt on some Linux setups.
-find_library(RT_LIBRARY rt)
-if(RT_LIBRARY)
-  target_link_libraries(rbuflogd PRIVATE ${RT_LIBRARY})
-endif()
+target_link_libraries(rbuflogd PRIVATE rbuflogd_common)
 
-# --- Test producer application ---
 add_executable(rbuflogd_producer_test
-  test/rbuflogd_producer_test.c
+  test/producer_smoketest.c
 )
 
 target_include_directories(rbuflogd_producer_test
   PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${RBUFLOGD_PUBLIC_INCLUDE_DIR}
 )
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
@@ -49,6 +94,8 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
   )
 endif()
 
-if(RT_LIBRARY)
-  target_link_libraries(rbuflogd_producer_test PRIVATE ${RT_LIBRARY})
-endif()
+target_link_libraries(rbuflogd_producer_test PRIVATE rbuflogd_producer)
+
+set_target_properties(rbuflogd_producer_test PROPERTIES
+  BUILD_RPATH "$ORIGIN"
+)
