@@ -1,8 +1,9 @@
 #define _DEFAULT_SOURCE
 
-#include "rbuflogd_common_types.h"
-#include "rbuflogd_consumer.h"
-#include "rbuflogd_shmem.h"
+#include "rbuflogd/common_types.h"
+#include "consumer.h"
+#include "log_sink.h"
+#include "shmem.h"
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
