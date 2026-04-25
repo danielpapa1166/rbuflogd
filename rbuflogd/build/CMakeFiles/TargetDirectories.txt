@@ -1,4 +1,0 @@
-/data/projects/rbuflogd/build/CMakeFiles/rbuflogd.dir
-/data/projects/rbuflogd/build/CMakeFiles/rbuflogd_producer_test.dir
-/data/projects/rbuflogd/build/CMakeFiles/edit_cache.dir
-/data/projects/rbuflogd/build/CMakeFiles/rebuild_cache.dir

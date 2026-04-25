@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/rbuflogd_producer_test.dir/test/rbuflogd_producer_test.c.o -o rbuflogd_producer_test  /usr/lib/x86_64-linux-gnu/librt.a 

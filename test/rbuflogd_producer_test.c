@@ -1,6 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 
-#include "../rbuflogd_common_types.h"
+#include "rbuflogd_common_types.h"
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -10,7 +10,6 @@
 #define TEST_MSG_COUNT 10
 
 int main(void) {
-  printf("Starting producer test...\n");
   int fd = shm_open(SHMEM_NAME, O_RDWR, 0);
   if (fd == -1) {
     perror("shm_open");

@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/rbuflogd.dir/rbuflogd_main.c.o CMakeFiles/rbuflogd.dir/rbuflogd_consumer.c.o CMakeFiles/rbuflogd.dir/rbuflogd_shmem.c.o -o rbuflogd  /usr/lib/x86_64-linux-gnu/librt.a 
