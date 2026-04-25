@@ -45,10 +45,11 @@ int rbuflogd_init_shmem(rbuf_t ** out_rbuf) {
   return 0;
 }
 
-int rbuflogd_cleanup_shmem() {
+int rbuflogd_cleanup_shmem(void) {
   if (shmem_fd != -1) {
     close(shmem_fd);
     shm_unlink(SHMEM_NAME);
+    shmem_fd = -1;
   }
   return 0;
 }

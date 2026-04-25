@@ -1,10 +1,9 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include "rbuflogd/producer.h"
+#include "ring_buffer.h"
 
 #include <fcntl.h>
-#include <stdio.h>
-#include <string.h>
 #include <sys/mman.h>
 #include <unistd.h>
 
@@ -41,18 +40,7 @@ int rbuflogd_producer_log(rbuflogd_producer_t * producer, const char * log_msg) 
     return -1;
   }
 
-  size_t head = atomic_load_explicit(&producer->rbuf->head, memory_order_relaxed);
-  size_t next_head = (head + 1) % RBUF_SIZE;
-  size_t tail = atomic_load_explicit(&producer->rbuf->tail, memory_order_acquire);
-
-  if (next_head == tail) {
-    return -1;
-  }
-
-  snprintf(producer->rbuf->data[head], RBUF_MSG_MAX_LEN, "%s", log_msg);
-  atomic_store_explicit(&producer->rbuf->head, next_head, memory_order_release);
-
-  return 0;
+  return rbuf_try_push(producer->rbuf, log_msg);
 }
 
 void rbuflogd_producer_close(rbuflogd_producer_t * producer) {

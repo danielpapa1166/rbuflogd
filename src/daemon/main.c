@@ -8,6 +8,9 @@
 #include <signal.h>
 #include <unistd.h>
 
+// note: compile with: 
+// rm -rf build && cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON && cmake --build build
+
 // handle user terminate signal to cleanup shared memory
 static int terminate_app = 0;
 
@@ -16,7 +19,7 @@ void handle_signal(int signal) {
   terminate_app = 1;
 }
 
-int main() {
+int main(void) {
 
   // Register signal handler for SIGINT and SIGTERM
   signal(SIGINT, handle_signal);
@@ -38,7 +41,7 @@ int main() {
       printf("Consumed log: %s\n", log_msg);
       rbuflogd_write_log(log_msg);
     }
-    usleep(10); 
+    usleep(1); 
   }
 
   rbuflogd_cleanup_shmem();

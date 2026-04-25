@@ -13,6 +13,7 @@ set(RBUFLOGD_PUBLIC_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_library(rbuflogd_common STATIC
   src/common/shmem.c
+  src/common/ring_buffer.c
 )
 
 target_include_directories(rbuflogd_common
@@ -40,6 +41,8 @@ add_library(rbuflogd_producer SHARED
 target_include_directories(rbuflogd_producer
   PUBLIC
     ${RBUFLOGD_PUBLIC_INCLUDE_DIR}
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/common
 )
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
@@ -53,6 +56,8 @@ endif()
 if(RT_LIBRARY)
   target_link_libraries(rbuflogd_producer PRIVATE ${RT_LIBRARY})
 endif()
+
+target_link_libraries(rbuflogd_producer PRIVATE rbuflogd_common)
 
 add_executable(rbuflogd
   src/daemon/main.c
