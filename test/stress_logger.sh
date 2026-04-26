@@ -4,10 +4,10 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DAEMON_BIN="${ROOT_DIR}/build/rbuflogd"
 PRODUCER_BIN="${ROOT_DIR}/build/rbuflogd_producer_test"
-LOG_FILE="${ROOT_DIR}/rbuflogd.log"
+LOG_GLOB="${ROOT_DIR}/rbuflogd_*.log"
 
 PRODUCERS="${PRODUCERS:-100}"
-MSGS_PER_PRODUCER="${MSGS_PER_PRODUCER:-100}"
+MSGS_PER_PRODUCER="${MSGS_PER_PRODUCER:-1000}"
 DRAIN_TIMEOUT_SEC="${DRAIN_TIMEOUT_SEC:-10}"
 
 if [[ ! -x "${DAEMON_BIN}" || ! -x "${PRODUCER_BIN}" ]]; then
@@ -28,7 +28,7 @@ cleanup() {
 trap cleanup EXIT
 
 echo "[1/5] Starting daemon"
-: > "${LOG_FILE}"
+rm -f ${LOG_GLOB}
 "${DAEMON_BIN}" >"${TMP_DIR}/daemon.out" 2>&1 &
 DAEMON_PID="$!"
 
@@ -65,7 +65,7 @@ stable_ticks=0
 end_epoch=$((SECONDS + DRAIN_TIMEOUT_SEC))
 
 while (( SECONDS < end_epoch )); do
-  line_count="$(wc -l < "${LOG_FILE}" 2>/dev/null || echo 0)"
+  line_count="$(cat ${LOG_GLOB} 2>/dev/null | wc -l || echo 0)"
 
   if [[ "${line_count}" -eq "${last_count}" ]]; then
     stable_ticks=$((stable_ticks + 1))
@@ -88,7 +88,7 @@ wait "${DAEMON_PID}" 2>/dev/null || true
 DAEMON_PID=""
 
 echo "[5/5] Checking consistency"
-grep -oE 'p[0-9]{7}-[0-9]{5}' "${LOG_FILE}" | sort > "${TMP_DIR}/actual_all.txt" || true
+cat ${LOG_GLOB} 2>/dev/null | grep -oE 'p[0-9]{7}-[0-9]{5}' | sort > "${TMP_DIR}/actual_all.txt" || true
 
 comm -23 "${TMP_DIR}/expected_all.txt" "${TMP_DIR}/actual_all.txt" > "${TMP_DIR}/missing.txt" || true
 comm -13 "${TMP_DIR}/expected_all.txt" "${TMP_DIR}/actual_all.txt" > "${TMP_DIR}/extra.txt" || true
