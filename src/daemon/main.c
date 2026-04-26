@@ -42,7 +42,7 @@ int main(int argc, char * argv[]) {
     rbuflogd_consumer_set_boot_id(boot_id);
   }
 
-  if (rbuflogd_log_sink_init() != 0) {
+  if (rbuflogd_log_sink_init(&cli_config) != 0) {
     printf("Failed to initialize log sink\n");
     return -1;
   }
