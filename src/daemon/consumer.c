@@ -9,6 +9,8 @@
 #include <string.h>
 #include <time.h>
 
+#define RBUF_BOOT_ID_PLACEHOLDER "dummy-boot-id"
+
 static const char * level_to_string(rbuflogd_log_level_t level) {
   switch (level) {
     case RBUF_LOG_LEVEL_DEBUG:
@@ -40,9 +42,9 @@ static void format_realtime_ns(uint64_t realtime_ns, char * out, size_t out_sz) 
 
 int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz) {
   rbuf_entry_t entry;
-  const char * boot_id = "dummy-boot-id";
+  const char * boot_id = RBUF_BOOT_ID_PLACEHOLDER;
   uint64_t mono_ms;
-  char time_buf[64];
+  char time_buf[RBUF_TIMESTAMP_STR_MAX_CHARS + 1];
 
   if (rbuf == NULL || out_msg == NULL || out_msg_sz == 0) {
     return -1;

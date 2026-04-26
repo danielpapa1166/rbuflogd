@@ -5,11 +5,33 @@
 #include <stdint.h>
 #include "rbuflogd/pub_common_types.h"
 
-#define RBUF_SIZE               (1024) 
-#define RBUF_MSG_MAX_LEN        256
-#define RBUF_LOG_CATEGORY_LEN   8
-#define RBUF_FORMATTED_LOG_MAX_LEN 300
-#define SHMEM_NAME              "/rbuflogd_shmem"
+#define RBUF_SIZE                         (1024) 
+#define RBUF_LOG_CATEGORY_LEN             8
+#define RBUF_FORMATTED_LOG_MAX_LEN        256
+
+/* Format: "%s [mono_ms=%llu] [boot_id=%s] [%s] [%s] %s" */
+#define RBUF_TIMESTAMP_STR_MAX_CHARS      23          /* YYYY:MM:DD HH:MM:SS.mmm */
+#define RBUF_MONO_MS_MAX_CHARS            20          /* max uint64 decimal digits */
+#define RBUF_BOOT_ID_MAX_CHARS            13          /* "dummy-boot-id" */
+#define RBUF_LEVEL_MAX_CHARS              7           /* "WARNING" / "UNKNOWN" */
+#define RBUF_CATEGORY_MAX_CHARS           (RBUF_LOG_CATEGORY_LEN - 1)
+#define RBUF_FORMAT_FIXED_CHARS           29          /* literals, brackets and spaces */
+
+#define RBUF_FORMATTED_LOG_MAX_CHARS (RBUF_FORMATTED_LOG_MAX_LEN - 1)
+
+#define RBUF_FORMAT_PREFIX_MAX_CHARS \
+  (RBUF_TIMESTAMP_STR_MAX_CHARS + RBUF_MONO_MS_MAX_CHARS + \
+   RBUF_BOOT_ID_MAX_CHARS + RBUF_LEVEL_MAX_CHARS + \
+   RBUF_CATEGORY_MAX_CHARS + RBUF_FORMAT_FIXED_CHARS)
+
+#define RBUF_MSG_MAX_CHARS                (RBUF_FORMATTED_LOG_MAX_CHARS - RBUF_FORMAT_PREFIX_MAX_CHARS)
+#define RBUF_MSG_MAX_LEN                  (RBUF_MSG_MAX_CHARS + 1)
+
+#if RBUF_MSG_MAX_CHARS < 1
+#error "RBUF_FORMATTED_LOG_MAX_LEN is too small for log metadata overhead"
+#endif
+
+#define SHMEM_NAME                        "/rbuflogd_shmem"
 
 typedef struct {
   uint64_t                realtime_ns;
