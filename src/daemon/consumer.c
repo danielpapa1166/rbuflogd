@@ -9,7 +9,9 @@
 #include <string.h>
 #include <time.h>
 
-#define RBUF_BOOT_ID_PLACEHOLDER "dummy-boot-id"
+#define RBUF_BOOT_ID_FALLBACK "unknown-boot-id"
+
+static char boot_id_cache[RBUF_BOOT_ID_MAX_CHARS + 1] = RBUF_BOOT_ID_FALLBACK;
 
 static const char * level_to_string(rbuflogd_log_level_t level) {
   switch (level) {
@@ -40,9 +42,17 @@ static void format_realtime_ns(uint64_t realtime_ns, char * out, size_t out_sz) 
   snprintf(out + strlen(out), out_sz - strlen(out), ".%03ld", ms);
 }
 
+void rbuflogd_consumer_set_boot_id(const char * boot_id) {
+  if (boot_id == NULL || boot_id[0] == '\0') {
+    snprintf(boot_id_cache, sizeof(boot_id_cache), "%s", RBUF_BOOT_ID_FALLBACK);
+    return;
+  }
+
+  snprintf(boot_id_cache, sizeof(boot_id_cache), "%s", boot_id);
+}
+
 int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz) {
   rbuf_entry_t entry;
-  const char * boot_id = RBUF_BOOT_ID_PLACEHOLDER;
   uint64_t mono_ms;
   char time_buf[RBUF_TIMESTAMP_STR_MAX_CHARS + 1];
 
@@ -63,7 +73,7 @@ int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz) {
     "%s [mono_ms=%llu] [boot_id=%s] [%s] [%*.*s] [%*.*s] %s",
     time_buf,
     (unsigned long long) mono_ms,
-    boot_id,
+    boot_id_cache,
     level_to_string(entry.level),
     RBUF_PRODUCER_ID_DISPLAY_CHARS,
     RBUF_PRODUCER_ID_DISPLAY_CHARS,
