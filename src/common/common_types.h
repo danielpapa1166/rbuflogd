@@ -9,19 +9,21 @@
 #define RBUF_LOG_CATEGORY_LEN             8
 #define RBUF_FORMATTED_LOG_MAX_LEN        256
 
-/* Format: "%s [mono_ms=%llu] [boot_id=%s] [%s] [%s] %s" */
+/* Format: "%s [mono_ms=%llu] [boot_id=%s] [%s] [%s] [%s] %s" */
 #define RBUF_TIMESTAMP_STR_MAX_CHARS      23          /* YYYY:MM:DD HH:MM:SS.mmm */
 #define RBUF_MONO_MS_MAX_CHARS            20          /* max uint64 decimal digits */
 #define RBUF_BOOT_ID_MAX_CHARS            13          /* "dummy-boot-id" */
 #define RBUF_LEVEL_MAX_CHARS              7           /* "WARNING" / "UNKNOWN" */
+#define RBUF_PRODUCER_ID_MAX_CHARS        (RBUF_PROD_ID_MAX_LEN - 1)
 #define RBUF_CATEGORY_MAX_CHARS           (RBUF_LOG_CATEGORY_LEN - 1)
-#define RBUF_FORMAT_FIXED_CHARS           29          /* literals, brackets and spaces */
+#define RBUF_FORMAT_FIXED_CHARS           32          /* literals, brackets and spaces */
 
-#define RBUF_FORMATTED_LOG_MAX_CHARS (RBUF_FORMATTED_LOG_MAX_LEN - 1)
+#define RBUF_FORMATTED_LOG_MAX_CHARS      (RBUF_FORMATTED_LOG_MAX_LEN - 1)
 
 #define RBUF_FORMAT_PREFIX_MAX_CHARS \
   (RBUF_TIMESTAMP_STR_MAX_CHARS + RBUF_MONO_MS_MAX_CHARS + \
-   RBUF_BOOT_ID_MAX_CHARS + RBUF_LEVEL_MAX_CHARS + \
+  RBUF_BOOT_ID_MAX_CHARS + RBUF_LEVEL_MAX_CHARS + \
+  RBUF_PRODUCER_ID_MAX_CHARS + \
    RBUF_CATEGORY_MAX_CHARS + RBUF_FORMAT_FIXED_CHARS)
 
 #define RBUF_MSG_MAX_CHARS                (RBUF_FORMATTED_LOG_MAX_CHARS - RBUF_FORMAT_PREFIX_MAX_CHARS)
