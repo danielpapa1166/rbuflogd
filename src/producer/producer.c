@@ -7,6 +7,7 @@
 
 #include <fcntl.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/mman.h>
 #include <time.h>
 #include <unistd.h>
@@ -15,6 +16,24 @@ typedef struct {
   int shmem_fd;
   rbuf_t * rbuf;
 } producer_state_t;
+
+static void copy_bounded_text(char * dst, size_t dst_len, const char * src) {
+  size_t i = 0;
+
+  if (dst == NULL || dst_len == 0) {
+    return;
+  }
+
+  memset(dst, 0, dst_len);
+  if (src == NULL) {
+    return;
+  }
+
+  while (i < dst_len && src[i] != '\0') {
+    dst[i] = src[i];
+    i++;
+  }
+}
 
 static int get_time_ns(clockid_t clock_id, uint64_t * out_ns) {
   struct timespec ts;
@@ -32,7 +51,7 @@ static int get_time_ns(clockid_t clock_id, uint64_t * out_ns) {
 }
 
 int rbuflogd_producer_open(rbuflogd_producer_t * producer, const char * producer_name) {
-  if (producer == NULL) {
+  if (producer == NULL || producer_name == NULL) {
     return -1;
   }
 
@@ -69,7 +88,7 @@ int rbuflogd_producer_open(rbuflogd_producer_t * producer, const char * producer
     return -1;
   }
 
-  snprintf(producer->producer_name, RBUF_PROD_ID_MAX_LEN, "%s", producer_name);
+  copy_bounded_text(producer->producer_name, sizeof(producer->producer_name), producer_name);
   producer->state = state;
 
   return 0;
@@ -78,7 +97,7 @@ int rbuflogd_producer_open(rbuflogd_producer_t * producer, const char * producer
 int rbuflogd_producer_log(rbuflogd_producer_t * producer, 
   rbuflogd_log_level_t level, const char * category, const char * log_msg) {
       
-  if (producer == NULL || producer->state == NULL || log_msg == NULL) {
+  if (producer == NULL || producer->state == NULL || category == NULL || log_msg == NULL) {
     return -1;
   }
 
@@ -93,12 +112,16 @@ int rbuflogd_producer_log(rbuflogd_producer_t * producer,
     return -1;
   }
 
-  snprintf(entry.producer_name, RBUF_PROD_ID_MAX_LEN, "%s", producer->producer_name);
+  copy_bounded_text(entry.producer_name, sizeof(entry.producer_name), producer->producer_name);
   entry.level = level;
-  snprintf(entry.category, RBUF_LOG_CATEGORY_LEN, "%s", category);
+  copy_bounded_text(entry.category, sizeof(entry.category), category);
   snprintf(entry.msg, RBUF_MSG_MAX_LEN, "%s", log_msg);
 
-  printf("Producer \"%s\" logging: \"%s\"\n", producer->producer_name, log_msg);
+  printf(
+    "Producer \"%.*s\" logging: \"%s\"\n",
+    RBUF_PRODUCER_ID_DISPLAY_CHARS,
+    producer->producer_name,
+    log_msg);
 
   return rbuf_try_push(state->rbuf, &entry);
 }

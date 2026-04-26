@@ -60,12 +60,16 @@ int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz) {
   snprintf(
     out_msg,
     out_msg_sz,
-    "%s [mono_ms=%llu] [boot_id=%s] [%s] [%s] [%s] %s",
+    "%s [mono_ms=%llu] [boot_id=%s] [%s] [%*.*s] [%*.*s] %s",
     time_buf,
     (unsigned long long) mono_ms,
     boot_id,
     level_to_string(entry.level),
+    RBUF_PRODUCER_ID_DISPLAY_CHARS,
+    RBUF_PRODUCER_ID_DISPLAY_CHARS,
     entry.producer_name,
+    RBUF_CATEGORY_DISPLAY_CHARS,
+    RBUF_CATEGORY_DISPLAY_CHARS,
     entry.category,
     entry.msg);
 
