@@ -45,7 +45,12 @@ typedef struct {
 } rbuf_entry_t;
 
 typedef struct {
-  rbuf_entry_t data[RBUF_SIZE];
+  atomic_size_t seq;
+  rbuf_entry_t entry;
+} rbuf_slot_t;
+
+typedef struct {
+  rbuf_slot_t slots[RBUF_SIZE];
   atomic_size_t head;
   atomic_size_t tail;
 } rbuf_t;

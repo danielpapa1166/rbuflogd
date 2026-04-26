@@ -1,10 +1,10 @@
 #define _POSIX_C_SOURCE 200809L
 #include "shmem.h"
 #include "common_types.h"
+#include "ring_buffer.h"
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
-#include <string.h>
 
 static int shmem_fd = -1;
 
@@ -35,8 +35,7 @@ int rbuflogd_init_shmem(rbuf_t ** out_rbuf) {
     return -1; // Failed to map shared memory
   }
 
-  // clear memory: 
-  memset(rbuf, 0, sizeof(rbuf_t));
+  rbuf_reset(rbuf);
 
   if (out_rbuf) {
     *out_rbuf = rbuf;
