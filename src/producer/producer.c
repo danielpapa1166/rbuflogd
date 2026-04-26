@@ -1,6 +1,6 @@
-#include <stdio.h>
 #define _POSIX_C_SOURCE 200809L
 
+#include <stdio.h>
 #include "rbuflogd/producer.h"
 #include "common_types.h"
 #include "ring_buffer.h"
@@ -8,12 +8,28 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <sys/mman.h>
+#include <time.h>
 #include <unistd.h>
 
 typedef struct {
   int shmem_fd;
   rbuf_t * rbuf;
 } producer_state_t;
+
+static int get_time_ns(clockid_t clock_id, uint64_t * out_ns) {
+  struct timespec ts;
+
+  if (out_ns == NULL) {
+    return -1;
+  }
+
+  if (clock_gettime(clock_id, &ts) != 0) {
+    return -1;
+  }
+
+  *out_ns = ((uint64_t) ts.tv_sec * 1000000000ULL) + (uint64_t) ts.tv_nsec;
+  return 0;
+}
 
 int rbuflogd_producer_open(rbuflogd_producer_t * producer, const char * producer_name) {
   if (producer == NULL) {
@@ -69,8 +85,14 @@ int rbuflogd_producer_log(rbuflogd_producer_t * producer,
   producer_state_t * state = (producer_state_t *) producer->state;
 
   rbuf_entry_t entry;
-  entry.realtime_ns = 0; // TODO: set actual timestamp
-  entry.monotonic_ns = 0; // TODO: set actual timestamp
+  if (get_time_ns(CLOCK_REALTIME, &entry.realtime_ns) != 0) {
+    return -1;
+  }
+
+  if (get_time_ns(CLOCK_MONOTONIC, &entry.monotonic_ns) != 0) {
+    return -1;
+  }
+
   snprintf(entry.producer_name, RBUF_PROD_ID_MAX_LEN, "%s", producer->producer_name);
   entry.level = level;
   snprintf(entry.category, RBUF_LOG_CATEGORY_LEN, "%s", category);
