@@ -64,6 +64,11 @@ int main(void) {
     rbuflogd_consumer_set_boot_id(boot_id);
   }
 
+  if (rbuflogd_log_sink_init() != 0) {
+    printf("Failed to initialize log sink\n");
+    return -1;
+  }
+
   rbuf_t * rbuf = NULL;
   char log_msg[RBUF_FORMATTED_LOG_MAX_LEN];
   // init shared memory:
