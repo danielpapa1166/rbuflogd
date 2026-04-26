@@ -1,3 +1,4 @@
+#include "rbuflogd/pub_common_types.h"
 #define _POSIX_C_SOURCE 200809L
 
 #include "consumer.h"
@@ -12,6 +13,7 @@
 #define RBUF_BOOT_ID_FALLBACK "unknown-boot-id"
 
 static char boot_id_cache[RBUF_BOOT_ID_MAX_CHARS + 1] = RBUF_BOOT_ID_FALLBACK;
+static rbuflogd_log_level_t minimum_log_level = DEFAULT_MINIMUM_LOG_LEVEL;
 
 static const char * level_to_string(rbuflogd_log_level_t level) {
   switch (level) {
@@ -51,6 +53,10 @@ void rbuflogd_consumer_set_boot_id(const char * boot_id) {
   snprintf(boot_id_cache, sizeof(boot_id_cache), "%s", boot_id);
 }
 
+void rbuflogd_set_minimum_log_level(rbuflogd_log_level_t level) {
+  minimum_log_level = level;
+}
+
 int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz) {
   rbuf_entry_t entry;
   uint64_t mono_ms;
@@ -62,6 +68,10 @@ int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz) {
 
   if (rbuf_try_pop(rbuf, &entry) != 0) {
     return -1;
+  }
+
+  if(entry.level < minimum_log_level) {
+    return -1; // Log level is below the configured minimum, skip
   }
 
   format_realtime_ns(entry.realtime_ns, time_buf, sizeof(time_buf));

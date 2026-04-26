@@ -7,7 +7,7 @@
 #define DEFAULT_LOG_FILE_PATH           "./"
 #define DEFAULT_LOG_FILE_NAME           "rbuflogd_%03u.log"
 #define DEFAULT_LOG_FILE_SIZE           (1024 * 1024) // 1 MiB
-#define DEFAULT_RING_BUFFER_SIZE        1000
+#define DEFAULT_RING_BUFFER_SIZE        1024
 #define DEFAULT_MINIMUM_LOG_LEVEL       ((rbuflogd_log_level_t)(RBUF_LOG_LEVEL_INFO))
 
 typedef struct {

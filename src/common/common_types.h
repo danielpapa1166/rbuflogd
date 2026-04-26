@@ -3,9 +3,9 @@
 
 #include <stdatomic.h>
 #include <stdint.h>
+#include "cli_config.h"
 #include "rbuflogd/pub_common_types.h"
 
-#define RBUF_SIZE                         (1024) 
 #define RBUF_LOG_CATEGORY_LEN             8
 #define RBUF_FORMATTED_LOG_MAX_LEN        256
 
@@ -50,7 +50,7 @@ typedef struct {
 } rbuf_slot_t;
 
 typedef struct {
-  rbuf_slot_t slots[RBUF_SIZE];
+  rbuf_slot_t slots[DEFAULT_RING_BUFFER_SIZE]; // todo make this configurable 
   atomic_size_t head;
   atomic_size_t tail;
 } rbuf_t;

@@ -11,7 +11,7 @@ int rbuf_is_empty(const rbuf_t * rbuf) {
   }
 
   const size_t tail = atomic_load_explicit(&rbuf->tail, memory_order_relaxed);
-  const rbuf_slot_t * slot = &rbuf->slots[tail % RBUF_SIZE];
+  const rbuf_slot_t * slot = &rbuf->slots[tail % DEFAULT_RING_BUFFER_SIZE];
   const size_t seq = atomic_load_explicit(&slot->seq, memory_order_acquire);
   const intptr_t dif = (intptr_t) seq - (intptr_t) (tail + 1);
 
@@ -24,7 +24,7 @@ int rbuf_is_full(const rbuf_t * rbuf) {
   }
 
   const size_t head = atomic_load_explicit(&rbuf->head, memory_order_relaxed);
-  const rbuf_slot_t * slot = &rbuf->slots[head % RBUF_SIZE];
+  const rbuf_slot_t * slot = &rbuf->slots[head % DEFAULT_RING_BUFFER_SIZE];
   const size_t seq = atomic_load_explicit(&slot->seq, memory_order_acquire);
   const intptr_t dif = (intptr_t) seq - (intptr_t) head;
 
@@ -44,7 +44,7 @@ int rbuf_try_push(rbuf_t * rbuf, const rbuf_entry_t * entry) {
     intptr_t dif;
 
     head = atomic_load_explicit(&rbuf->head, memory_order_relaxed);
-    slot = &rbuf->slots[head % RBUF_SIZE];
+    slot = &rbuf->slots[head % DEFAULT_RING_BUFFER_SIZE];
     seq = atomic_load_explicit(&slot->seq, memory_order_acquire);
     dif = (intptr_t) seq - (intptr_t) head;
 
@@ -77,7 +77,7 @@ int rbuf_try_pop(rbuf_t * rbuf, rbuf_entry_t * out_entry) {
     return -1;
   }
 
-  slot = &rbuf->slots[tail % RBUF_SIZE];
+  slot = &rbuf->slots[tail % DEFAULT_RING_BUFFER_SIZE];
   seq = atomic_load_explicit(&slot->seq, memory_order_acquire);
   dif = (intptr_t) seq - (intptr_t) (tail + 1);
 
@@ -86,7 +86,7 @@ int rbuf_try_pop(rbuf_t * rbuf, rbuf_entry_t * out_entry) {
   }
 
   memcpy(out_entry, &slot->entry, sizeof(rbuf_entry_t));
-  atomic_store_explicit(&slot->seq, tail + RBUF_SIZE, memory_order_release);
+  atomic_store_explicit(&slot->seq, tail + DEFAULT_RING_BUFFER_SIZE, memory_order_release);
   atomic_store_explicit(&rbuf->tail, tail + 1, memory_order_relaxed);
 
   return 0;
@@ -98,7 +98,7 @@ void rbuf_reset(rbuf_t * rbuf) {
   }
 
   memset(rbuf->slots, 0, sizeof(rbuf->slots));
-  for (size_t i = 0; i < RBUF_SIZE; i++) {
+  for (size_t i = 0; i < DEFAULT_RING_BUFFER_SIZE; i++) {
     atomic_store_explicit(&rbuf->slots[i].seq, i, memory_order_relaxed);
   }
 
