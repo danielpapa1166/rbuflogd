@@ -60,6 +60,16 @@ static int find_log_start(unsigned * out_index, size_t * out_size, const char **
     return 0;
   }
 
+  if ((size_t) highest_stat.st_size < LOG_FILE_MAX_BYTES) {
+    *out_index = highest_index;
+    *out_size = (size_t) highest_stat.st_size;
+    *out_mode = "a";
+
+    printf("Resuming log file rbuflogd_%03u.log at size %zu bytes\n", highest_index, (size_t) highest_stat.st_size);
+
+    return 0;
+  }
+
   *out_index = (highest_index + 1U) % LOG_FILE_INDEX_MAX;
   *out_size = 0;
   *out_mode = "w";
