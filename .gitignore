@@ -2,3 +2,5 @@ build/
 *.log
 *.o
 .cache/
+**/compile_commands.json
+**/compile_command.json
