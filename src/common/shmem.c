@@ -1,6 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 #include "shmem.h"
-#include "rbuflogd/common_types.h"
+#include "common_types.h"
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>

@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(rbuflogd LANGUAGES C)
 
+include(GNUInstallDirs)
+
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -103,4 +105,13 @@ target_link_libraries(rbuflogd_producer_test PRIVATE rbuflogd_producer)
 
 set_target_properties(rbuflogd_producer_test PROPERTIES
   BUILD_RPATH "$ORIGIN"
+)
+
+install(TARGETS rbuflogd_producer
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(FILES include/rbuflogd/producer.h
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rbuflogd
 )

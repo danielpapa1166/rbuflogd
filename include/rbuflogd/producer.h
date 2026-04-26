@@ -1,11 +1,8 @@
 #ifndef RBUFLOGD_PRODUCER_H
 #define RBUFLOGD_PRODUCER_H
 
-#include "rbuflogd/common_types.h"
-
 typedef struct {
-  int shmem_fd;
-  rbuf_t * rbuf;
+  void * state;
 } rbuflogd_producer_t;
 
 int rbuflogd_producer_open(rbuflogd_producer_t * producer);

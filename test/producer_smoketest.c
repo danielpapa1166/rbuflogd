@@ -5,12 +5,12 @@
 #include <string.h>
 
 #define TEST_MSG_COUNT 10
+#define TEST_MSG_MAX_LEN 256
 
 int main(void) {
   printf("Starting producer test...\n");
   rbuflogd_producer_t producer = {
-    .shmem_fd = -1,
-    .rbuf = NULL,
+    .state = NULL,
   };
 
   if (rbuflogd_producer_open(&producer) == -1) {
@@ -19,7 +19,7 @@ int main(void) {
   }
 
   for (int i = 0; i < TEST_MSG_COUNT; i++) {
-    char log_msg[RBUF_MSG_MAX_LEN];
+    char log_msg[TEST_MSG_MAX_LEN];
     snprintf(log_msg, sizeof(log_msg), "test message %d", i);
 
     if (rbuflogd_producer_log(&producer, log_msg) == -1) {

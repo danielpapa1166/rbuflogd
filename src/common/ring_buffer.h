@@ -1,7 +1,7 @@
 #ifndef RBUFLOGD_RING_BUFFER_H
 #define RBUFLOGD_RING_BUFFER_H
 
-#include "rbuflogd/common_types.h"
+#include "common_types.h"
 
 int rbuf_is_empty(const rbuf_t * rbuf);
 int rbuf_is_full(const rbuf_t * rbuf);

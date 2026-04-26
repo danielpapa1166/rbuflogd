@@ -1,6 +1,6 @@
 #define _DEFAULT_SOURCE
 
-#include "rbuflogd/common_types.h"
+#include "common_types.h"
 #include "consumer.h"
 #include "log_sink.h"
 #include "shmem.h"
