@@ -26,7 +26,7 @@ int main(void) {
   signal(SIGTERM, handle_signal);
 
   rbuf_t * rbuf = NULL;
-  char log_msg[RBUF_MSG_MAX_LEN];
+  char log_msg[RBUF_FORMATTED_LOG_MAX_LEN];
   // init shared memory:
   int res = rbuflogd_init_shmem(&rbuf);
   if (res != 0) {
@@ -36,9 +36,9 @@ int main(void) {
 
 
   while(!terminate_app) {
-    const int res = rbuflogd_consume(rbuf, log_msg); 
+    const int res = rbuflogd_consume(rbuf, log_msg, sizeof(log_msg)); 
     if (res == 0) {
-      printf("Consumed log: %s\n", log_msg);
+      printf("%s\n", log_msg);
       rbuflogd_write_log(log_msg);
     }
     usleep(1); 

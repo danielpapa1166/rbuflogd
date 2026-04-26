@@ -8,6 +8,7 @@
 #define RBUF_SIZE               (1024) 
 #define RBUF_MSG_MAX_LEN        256
 #define RBUF_LOG_CATEGORY_LEN   8
+#define RBUF_FORMATTED_LOG_MAX_LEN 300
 #define SHMEM_NAME              "/rbuflogd_shmem"
 
 typedef struct {
