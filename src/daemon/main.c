@@ -4,6 +4,7 @@
 #include "consumer.h"
 #include "log_sink.h"
 #include "shmem.h"
+#include "cli_parser.h"
 #include <string.h>
 #include <stdio.h>
 #include <signal.h>
@@ -19,7 +20,14 @@ void handle_signal(int signal);
 static int terminate_app = 0;
 
 
-int main(void) {
+int main(int argc, char * argv[]) {
+  rbuflogd_cli_config_t cli_config;
+  const int cli_res = parse_cli_args(argc, argv, &cli_config);
+  if (cli_res != 0) {
+    return -1;
+  }
+
+
   char boot_id[RBUF_BOOT_ID_MAX_CHARS + 1] = {0};
 
   // Register signal handler for SIGINT and SIGTERM

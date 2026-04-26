@@ -65,6 +65,7 @@ add_executable(rbuflogd
   src/daemon/main.c
   src/daemon/consumer.c
   src/daemon/log_sink.c
+  src/daemon/cli_parser.c
 )
 
 target_include_directories(rbuflogd
