@@ -13,7 +13,7 @@ int main(void) {
     .state = NULL,
   };
 
-  if (rbuflogd_producer_open(&producer) == -1) {
+  if (rbuflogd_producer_open(&producer, "test_producer") == -1) {
     perror("rbuflogd_producer_open");
     return -1;
   }
@@ -22,7 +22,7 @@ int main(void) {
     char log_msg[TEST_MSG_MAX_LEN];
     snprintf(log_msg, sizeof(log_msg), "test message %d", i);
 
-    if (rbuflogd_producer_log(&producer, log_msg) == -1) {
+    if (rbuflogd_producer_log(&producer, RBUF_LOG_LEVEL_INFO, "test_category", log_msg) == -1) {
       printf("Buffer full, stopping at message %d\n", i);
       break;
     }

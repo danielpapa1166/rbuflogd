@@ -1,4 +1,5 @@
 #include "ring_buffer.h"
+#include "common_types.h"
 
 #include <stdatomic.h>
 #include <stdio.h>
@@ -25,8 +26,8 @@ int rbuf_is_full(const rbuf_t * rbuf) {
   return next_head == tail;
 }
 
-int rbuf_try_push(rbuf_t * rbuf, const char * msg) {
-  if (rbuf == NULL || msg == NULL) {
+int rbuf_try_push(rbuf_t * rbuf, const rbuf_entry_t * entry) {
+  if (rbuf == NULL || entry == NULL) {
     return -1;
   }
 
@@ -38,13 +39,13 @@ int rbuf_try_push(rbuf_t * rbuf, const char * msg) {
     return -1;
   }
 
-  snprintf(rbuf->data[head], RBUF_MSG_MAX_LEN, "%s", msg);
+  memcpy(&rbuf->data[head], entry, sizeof(rbuf_entry_t));
   atomic_store_explicit(&rbuf->head, next_head, memory_order_release);
   return 0;
 }
 
-int rbuf_try_pop(rbuf_t * rbuf, char * out_msg) {
-  if (rbuf == NULL || out_msg == NULL) {
+int rbuf_try_pop(rbuf_t * rbuf, rbuf_entry_t * out_entry) {
+  if (rbuf == NULL || out_entry == NULL) {
     return -1;
   }
 
@@ -55,8 +56,7 @@ int rbuf_try_pop(rbuf_t * rbuf, char * out_msg) {
     return -1;
   }
 
-  memcpy(out_msg, rbuf->data[tail], RBUF_MSG_MAX_LEN);
-  out_msg[RBUF_MSG_MAX_LEN - 1] = '\0';
+  memcpy(out_entry, &rbuf->data[tail], sizeof(rbuf_entry_t));
   atomic_store_explicit(&rbuf->tail, (tail + 1) % RBUF_SIZE, memory_order_release);
   return 0;
 }

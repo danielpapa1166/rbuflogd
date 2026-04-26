@@ -113,5 +113,6 @@ install(TARGETS rbuflogd_producer
 )
 
 install(FILES include/rbuflogd/producer.h
+              include/rbuflogd/pub_common_types.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rbuflogd
 )
