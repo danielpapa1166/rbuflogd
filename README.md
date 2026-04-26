@@ -35,7 +35,11 @@ Start the daemon:
 Link your application against `librbuflogd_producer` and use the producer API:
 ```c
 rbuflogd_producer_t p;
-rbuflogd_producer_open(&p);
-rbuflogd_producer_log(&p, "hello from producer");
+rbuflogd_producer_open(&p, "myapp");  // producer_name must be < 8 chars
+rbuflogd_producer_log(&p, RBUF_LOG_LEVEL_INFO, "net", "connection established");
 rbuflogd_producer_close(&p);
 ```
+
+Available log levels: `RBUF_LOG_LEVEL_DEBUG`, `RBUF_LOG_LEVEL_INFO`, `RBUF_LOG_LEVEL_WARNING`, `RBUF_LOG_LEVEL_ERROR`.
+
+Each log entry carries a producer name, log level, category (up to 8 chars), message, and both realtime and monotonic timestamps.
