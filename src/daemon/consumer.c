@@ -18,15 +18,15 @@ static rbuflogd_log_level_t minimum_log_level = DEFAULT_MINIMUM_LOG_LEVEL;
 static const char * level_to_string(rbuflogd_log_level_t level) {
   switch (level) {
     case RBUF_LOG_LEVEL_DEBUG:
-      return "DEBUG";
+      return "   DEBUG";
     case RBUF_LOG_LEVEL_INFO:
-      return "INFO";
+      return "    INFO";
     case RBUF_LOG_LEVEL_WARNING:
-      return "WARNING";
+      return " WARNING";
     case RBUF_LOG_LEVEL_ERROR:
-      return "ERROR";
+      return "   ERROR";
     default:
-      return "UNKNOWN";
+      return " UNKNOWN";
   }
 }
 

@@ -13,7 +13,7 @@
 #define RBUF_TIMESTAMP_STR_MAX_CHARS      23          /* YYYY:MM:DD HH:MM:SS.mmm */
 #define RBUF_MONO_MS_MAX_CHARS            20          /* max uint64 decimal digits */
 #define RBUF_BOOT_ID_MAX_CHARS            36          /* Linux /proc boot_id UUID */
-#define RBUF_LEVEL_MAX_CHARS              7           /* "WARNING" / "UNKNOWN" */
+#define RBUF_LEVEL_MAX_CHARS              8           /* " WARNING" / " UNKNOWN" */
 #define RBUF_PRODUCER_ID_DISPLAY_CHARS    RBUF_PROD_ID_MAX_LEN
 #define RBUF_CATEGORY_DISPLAY_CHARS       RBUF_LOG_CATEGORY_LEN
 #define RBUF_FORMAT_FIXED_CHARS           32          /* literals, brackets and spaces */
