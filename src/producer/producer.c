@@ -117,12 +117,6 @@ int rbuflogd_producer_log(rbuflogd_producer_t * producer,
   copy_bounded_text(entry.category, sizeof(entry.category), category);
   snprintf(entry.msg, RBUF_MSG_MAX_LEN, "%s", log_msg);
 
-  printf(
-    "Producer \"%.*s\" logging: \"%s\"\n",
-    RBUF_PRODUCER_ID_DISPLAY_CHARS,
-    producer->producer_name,
-    log_msg);
-
   return rbuf_try_push(state->rbuf, &entry);
 }
 
