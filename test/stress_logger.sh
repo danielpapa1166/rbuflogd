@@ -9,6 +9,7 @@ LOG_GLOB="${ROOT_DIR}/rbuflogd_*.log"
 PRODUCERS="${PRODUCERS:-10}"
 MSGS_PER_PRODUCER="${MSGS_PER_PRODUCER:-100}"
 DRAIN_TIMEOUT_SEC="${DRAIN_TIMEOUT_SEC:-10}"
+ENABLE_DAEMON_SELF_LOG="${ENABLE_DAEMON_SELF_LOG:-1}"
 
 if [[ ! -x "${DAEMON_BIN}" || ! -x "${PRODUCER_BIN}" ]]; then
   echo "Build artifacts not found. Run: cmake -S . -B build && cmake --build build" >&2
@@ -29,7 +30,11 @@ trap cleanup EXIT
 
 echo "[1/5] Starting daemon"
 rm -f ${LOG_GLOB}
-"${DAEMON_BIN}" >"${TMP_DIR}/daemon.out" 2>&1 &
+daemon_args=()
+if [[ "${ENABLE_DAEMON_SELF_LOG}" == "1" ]]; then
+  daemon_args+=("--log-init-success")
+fi
+"${DAEMON_BIN}" "${daemon_args[@]}" >"${TMP_DIR}/daemon.out" 2>&1 &
 DAEMON_PID="$!"
 
 # Give daemon a brief moment to initialize shared memory.
