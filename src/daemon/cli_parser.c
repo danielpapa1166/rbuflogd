@@ -11,6 +11,7 @@ static void print_usage(const char * program_name) {
   printf("  -s, --log-size <bytes>       Max log file size in bytes (default: %d)\n", DEFAULT_LOG_FILE_SIZE);
   printf("  -b, --buffer-size <size>     Ring buffer size (default: %d)\n", DEFAULT_RING_BUFFER_SIZE);
   printf("  -l, --log-level <level>      Min log level (0=DEBUG, 1=INFO, 2=WARN, 3=ERROR) (default: %d)\n", DEFAULT_MINIMUM_LOG_LEVEL);
+  printf("      --log-init-success       Write a daemon self-log on successful init (default: off)\n");
   printf("  -h, --help                   Show this help message\n");
 }
 
@@ -68,6 +69,7 @@ int parse_cli_args(int argc, char * argv[],
   cli_config_out->log_file_size = DEFAULT_LOG_FILE_SIZE;
   cli_config_out->ring_buffer_size = DEFAULT_RING_BUFFER_SIZE;
   cli_config_out->minimum_log_level = DEFAULT_MINIMUM_LOG_LEVEL;
+  cli_config_out->log_init_success = DEFAULT_LOG_INIT_SUCCESS;
 
   // Parse command line arguments
   for (int i = 1; i < argc; i++) {
@@ -122,6 +124,9 @@ int parse_cli_args(int argc, char * argv[],
         fprintf(stderr, "Error: Invalid log level (0-3)\n");
         return -1;
       }
+    }
+    else if (strcmp(arg, "--log-init-success") == 0) {
+      cli_config_out->log_init_success = 1;
     }
     else {
       fprintf(stderr, "Error: Unknown option '%s'\n", arg);
