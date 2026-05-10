@@ -57,10 +57,84 @@ void rbuflogd_set_minimum_log_level(rbuflogd_log_level_t level) {
   minimum_log_level = level;
 }
 
-int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz) {
-  rbuf_entry_t entry;
+static int format_log_line(
+  uint64_t realtime_ns,
+  uint64_t monotonic_ns,
+  rbuflogd_log_level_t level,
+  const char * producer_name,
+  const char * category,
+  const char * msg,
+  char * out_msg,
+  size_t out_msg_sz) {
   uint64_t mono_ms;
   char time_buf[RBUF_TIMESTAMP_STR_MAX_CHARS + 1];
+
+  if (producer_name == NULL || category == NULL || msg == NULL || out_msg == NULL || out_msg_sz == 0) {
+    return -1;
+  }
+
+  if (level < minimum_log_level) {
+    return -1;
+  }
+
+  format_realtime_ns(realtime_ns, time_buf, sizeof(time_buf));
+  mono_ms = monotonic_ns / 1000000ULL;
+
+  snprintf(
+    out_msg,
+    out_msg_sz,
+    "%s [%8llu ms] [%s] [%s] [%*.*s] [%*.*s] %s",
+    time_buf,
+    (unsigned long long) mono_ms,
+    boot_id_cache,
+    level_to_string(level),
+    RBUF_PRODUCER_ID_DISPLAY_CHARS,
+    RBUF_PRODUCER_ID_DISPLAY_CHARS,
+    producer_name,
+    RBUF_CATEGORY_DISPLAY_CHARS,
+    RBUF_CATEGORY_DISPLAY_CHARS,
+    category,
+    msg);
+
+  return 0;
+}
+
+int rbuflogd_format_internal_log(
+  rbuflogd_log_level_t level,
+  const char * producer_name,
+  const char * category,
+  const char * msg,
+  char * out_msg,
+  size_t out_msg_sz) {
+  struct timespec realtime_ts;
+  struct timespec monotonic_ts;
+  uint64_t realtime_ns;
+  uint64_t monotonic_ns;
+
+  if (clock_gettime(CLOCK_REALTIME, &realtime_ts) != 0) {
+    return -1;
+  }
+
+  if (clock_gettime(CLOCK_MONOTONIC, &monotonic_ts) != 0) {
+    return -1;
+  }
+
+  realtime_ns = ((uint64_t) realtime_ts.tv_sec * 1000000000ULL) + (uint64_t) realtime_ts.tv_nsec;
+  monotonic_ns = ((uint64_t) monotonic_ts.tv_sec * 1000000000ULL) + (uint64_t) monotonic_ts.tv_nsec;
+
+  return format_log_line(
+    realtime_ns,
+    monotonic_ns,
+    level,
+    producer_name,
+    category,
+    msg,
+    out_msg,
+    out_msg_sz);
+}
+
+int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz) {
+  rbuf_entry_t entry;
 
   if (rbuf == NULL || out_msg == NULL || out_msg_sz == 0) {
     return -1;
@@ -70,28 +144,13 @@ int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz) {
     return -1;
   }
 
-  if(entry.level < minimum_log_level) {
-    return -1; // Log level is below the configured minimum, skip
-  }
-
-  format_realtime_ns(entry.realtime_ns, time_buf, sizeof(time_buf));
-  mono_ms = entry.monotonic_ns / 1000000ULL;
-
-  snprintf(
-    out_msg,
-    out_msg_sz,
-    "%s [%8llu ms] [%s] [%s] [%*.*s] [%*.*s] %s",
-    time_buf,
-    (unsigned long long) mono_ms,
-    boot_id_cache,
-    level_to_string(entry.level),
-    RBUF_PRODUCER_ID_DISPLAY_CHARS,
-    RBUF_PRODUCER_ID_DISPLAY_CHARS,
+  return format_log_line(
+    entry.realtime_ns,
+    entry.monotonic_ns,
+    entry.level,
     entry.producer_name,
-    RBUF_CATEGORY_DISPLAY_CHARS,
-    RBUF_CATEGORY_DISPLAY_CHARS,
     entry.category,
-    entry.msg);
-
-  return 0;
+    entry.msg,
+    out_msg,
+    out_msg_sz);
 }
