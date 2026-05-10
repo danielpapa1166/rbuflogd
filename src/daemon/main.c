@@ -58,6 +58,20 @@ int main(int argc, char * argv[]) {
     return -1; // Failed to initialize shared memory   
   }
 
+  if (cli_config.log_init_success) {
+    const char * init_msg = "rbuflogd initialized successfully";
+    if (rbuflogd_format_internal_log(
+        RBUF_LOG_LEVEL_INFO,
+        "rbuflogd",
+        "Init",
+        init_msg,
+        log_msg,
+        sizeof(log_msg)) == 0) {
+      printf("%s\n", log_msg);
+      rbuflogd_write_log(log_msg);
+    }
+  }
+
 
   while(!terminate_app) {
     const int res = rbuflogd_consume(rbuf, log_msg, sizeof(log_msg)); 
