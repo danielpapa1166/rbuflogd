@@ -40,7 +40,7 @@ static void format_realtime_ns(uint64_t realtime_ns, char * out, size_t out_sz) 
   }
 
   localtime_r(&sec, &tm_buf);
-  strftime(out, out_sz, "%Y:%m:%d %H:%M:%S", &tm_buf);
+  strftime(out, out_sz, "%Y.%m.%d %H:%M:%S", &tm_buf);
   snprintf(out + strlen(out), out_sz - strlen(out), ".%03ld", ms);
 }
 
