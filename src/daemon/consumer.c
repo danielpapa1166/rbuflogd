@@ -80,7 +80,7 @@ int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz) {
   snprintf(
     out_msg,
     out_msg_sz,
-    "%s [mono_ms=%llu] [boot_id=%s] [%s] [%*.*s] [%*.*s] %s",
+    "%s [%8llu ms] [%s] [%s] [%*.*s] [%*.*s] %s",
     time_buf,
     (unsigned long long) mono_ms,
     boot_id_cache,

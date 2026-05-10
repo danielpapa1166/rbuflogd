@@ -9,14 +9,14 @@
 #define RBUF_LOG_CATEGORY_LEN             8
 #define RBUF_FORMATTED_LOG_MAX_LEN        256
 
-/* Format: "%s [mono_ms=%llu] [boot_id=%s] [%s] [%s] [%s] %s" */
+/* Format: "%s [%8llu ms] [boot_id=%s] [%s] [%s] [%s] %s" */
 #define RBUF_TIMESTAMP_STR_MAX_CHARS      23          /* YYYY.MM.DD HH:MM:SS.mmm */
-#define RBUF_MONO_MS_MAX_CHARS            20          /* max uint64 decimal digits */
+#define RBUF_MONO_MS_MAX_CHARS            20          /* max uint64 decimal digits + " ms" */  
 #define RBUF_BOOT_ID_MAX_CHARS            8           /* first 8 characters of Linux /proc boot_id UUID, (~4 billion) */
 #define RBUF_LEVEL_MAX_CHARS              8           /* " WARNING" / " UNKNOWN" */
 #define RBUF_PRODUCER_ID_DISPLAY_CHARS    RBUF_PROD_ID_MAX_LEN
 #define RBUF_CATEGORY_DISPLAY_CHARS       RBUF_LOG_CATEGORY_LEN
-#define RBUF_FORMAT_FIXED_CHARS           32          /* literals, brackets and spaces */
+#define RBUF_FORMAT_FIXED_CHARS           27          /* literals, brackets and spaces */
 
 #define RBUF_FORMATTED_LOG_MAX_CHARS      (RBUF_FORMATTED_LOG_MAX_LEN - 1)
 
