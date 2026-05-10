@@ -78,6 +78,7 @@ int main(int argc, char * argv[]) {
 
 static int read_boot_id(char * out_boot_id, size_t out_boot_id_sz) {
   FILE * f = NULL;
+  char temp_buf[64] = {0};
   size_t len;
 
   if (out_boot_id == NULL || out_boot_id_sz == 0) {
@@ -89,16 +90,19 @@ static int read_boot_id(char * out_boot_id, size_t out_boot_id_sz) {
     return -1;
   }
 
-  if (fgets(out_boot_id, (int) out_boot_id_sz, f) == NULL) {
+  if (fgets(temp_buf, sizeof(temp_buf), f) == NULL) {
     fclose(f);
     return -1;
   }
 
   fclose(f);
-  len = strlen(out_boot_id);
-  if (len > 0 && out_boot_id[len - 1] == '\n') {
-    out_boot_id[len - 1] = '\0';
+  len = strlen(temp_buf);
+  if (len > 0 && temp_buf[len - 1] == '\n') {
+    temp_buf[len - 1] = '\0';
   }
+
+  // Only take the first out_boot_id_sz-1 characters
+  snprintf(out_boot_id, out_boot_id_sz, "%.*s", (int)(out_boot_id_sz - 1), temp_buf);
 
   return 0;
 }

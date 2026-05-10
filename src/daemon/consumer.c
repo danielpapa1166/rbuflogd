@@ -10,7 +10,7 @@
 #include <string.h>
 #include <time.h>
 
-#define RBUF_BOOT_ID_FALLBACK "unknown-boot-id"
+#define RBUF_BOOT_ID_FALLBACK " unknown"
 
 static char boot_id_cache[RBUF_BOOT_ID_MAX_CHARS + 1] = RBUF_BOOT_ID_FALLBACK;
 static rbuflogd_log_level_t minimum_log_level = DEFAULT_MINIMUM_LOG_LEVEL;
