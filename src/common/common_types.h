@@ -53,6 +53,7 @@ typedef struct {
   rbuf_slot_t slots[DEFAULT_RING_BUFFER_SIZE]; // todo make this configurable 
   atomic_size_t head;
   atomic_size_t tail;
+  atomic_uint wake_seq;
 } rbuf_t;
 
 

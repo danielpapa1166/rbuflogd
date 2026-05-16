@@ -10,6 +10,8 @@
 #include <string.h>
 #include <time.h>
 
+#define RBUF_CONSUME_WAIT_TIMEOUT_MS 100
+
 #define RBUF_BOOT_ID_FALLBACK " unknown"
 
 static char boot_id_cache[RBUF_BOOT_ID_MAX_CHARS + 1] = RBUF_BOOT_ID_FALLBACK;
@@ -141,7 +143,13 @@ int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz) {
   }
 
   if (rbuf_try_pop(rbuf, &entry) != 0) {
-    return -1;
+    if (rbuf_wait_for_data(rbuf, RBUF_CONSUME_WAIT_TIMEOUT_MS) != 0) {
+      return -1;
+    }
+
+    if (rbuf_try_pop(rbuf, &entry) != 0) {
+      return -1;
+    }
   }
 
   return format_log_line(
