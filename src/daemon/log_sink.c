@@ -219,3 +219,13 @@ int rbuflogd_write_log(const char * log_msg) {
   current_log_size += line_bytes;
   return 0;
 }
+
+int rbuflogd_log_sink_cleanup(void) {
+  if (log_file != NULL) {
+    fclose(log_file);
+    log_file = NULL;
+  }
+
+  log_sink_initialized = 0;
+  return 0;
+}

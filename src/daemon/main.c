@@ -78,6 +78,7 @@ int main(int argc, char * argv[]) {
   }
 
   rbuflogd_cleanup_shmem();
+  rbuflogd_log_sink_cleanup();
 
   return 0;
 }
