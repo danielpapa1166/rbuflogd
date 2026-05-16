@@ -67,20 +67,17 @@ int main(int argc, char * argv[]) {
         init_msg,
         log_msg,
         sizeof(log_msg)) == 0) {
-      printf("%s\n", log_msg);
       rbuflogd_write_log(log_msg);
     }
   }
   while (!terminate_app) {
     const int consume_res = rbuflogd_consume(rbuf, log_msg, sizeof(log_msg));
     if (consume_res == 0) {
-      printf("%s\n", log_msg);
       rbuflogd_write_log(log_msg);
     }
   }
 
   rbuflogd_cleanup_shmem();
-  printf("Consumer has terminated.\n");
 
   return 0;
 }
