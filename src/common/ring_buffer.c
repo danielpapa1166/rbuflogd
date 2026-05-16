@@ -1,9 +1,21 @@
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 #include "ring_buffer.h"
 #include "common_types.h"
 
+#include <errno.h>
+#include <limits.h>
+#include <linux/futex.h>
 #include <stdint.h>
 #include <stdatomic.h>
 #include <string.h>
+#include <sys/syscall.h>
+#include <time.h>
+#include <unistd.h>
+
+_Static_assert(sizeof(unsigned int) == 4, "futex wait word must be 32-bit");
 
 int rbuf_is_empty(const rbuf_t * rbuf) {
   if (rbuf == NULL) {
@@ -64,6 +76,16 @@ int rbuf_try_push(rbuf_t * rbuf, const rbuf_entry_t * entry) {
 
   memcpy(&slot->entry, entry, sizeof(rbuf_entry_t));
   atomic_store_explicit(&slot->seq, head + 1, memory_order_release);
+  atomic_fetch_add_explicit(&rbuf->wake_seq, 1U, memory_order_release);
+  (void) syscall(
+    SYS_futex,
+    (unsigned int *) &rbuf->wake_seq,
+    FUTEX_WAKE,
+    INT_MAX,
+    NULL,
+    NULL,
+    0);
+
   return 0;
 }
 
@@ -92,6 +114,45 @@ int rbuf_try_pop(rbuf_t * rbuf, rbuf_entry_t * out_entry) {
   return 0;
 }
 
+int rbuf_wait_for_data(rbuf_t * rbuf, uint32_t timeout_ms) {
+  struct timespec timeout_ts;
+  unsigned int expected;
+  int futex_res;
+
+  if (rbuf == NULL) {
+    return -1;
+  }
+
+  if (!rbuf_is_empty(rbuf)) {
+    return 0;
+  }
+
+  expected = atomic_load_explicit(&rbuf->wake_seq, memory_order_acquire);
+  if (!rbuf_is_empty(rbuf)) {
+    return 0;
+  }
+
+  timeout_ts.tv_sec = (time_t) (timeout_ms / 1000U);
+  timeout_ts.tv_nsec = (long) ((timeout_ms % 1000U) * 1000000U);
+
+  futex_res = (int) syscall(
+    SYS_futex,
+    (unsigned int *) &rbuf->wake_seq,
+    FUTEX_WAIT,
+    expected,
+    &timeout_ts,
+    NULL,
+    0);
+
+  if (futex_res == -1) {
+    if (errno != EAGAIN && errno != ETIMEDOUT && errno != EINTR) {
+      return -1;
+    }
+  }
+
+  return rbuf_is_empty(rbuf) ? -1 : 0;
+}
+
 void rbuf_reset(rbuf_t * rbuf) {
   if (rbuf == NULL) {
     return;
@@ -104,4 +165,5 @@ void rbuf_reset(rbuf_t * rbuf) {
 
   atomic_store_explicit(&rbuf->head, 0, memory_order_relaxed);
   atomic_store_explicit(&rbuf->tail, 0, memory_order_relaxed);
+  atomic_store_explicit(&rbuf->wake_seq, 0U, memory_order_relaxed);
 }
