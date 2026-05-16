@@ -17,7 +17,7 @@ static int read_boot_id(char * out_boot_id, size_t out_boot_id_sz);
 void handle_signal(int signal); 
 
 // handle user terminate signal to cleanup shared memory
-static int terminate_app = 0;
+static volatile sig_atomic_t terminate_app = 0;
 
 
 int main(int argc, char * argv[]) {
@@ -71,15 +71,12 @@ int main(int argc, char * argv[]) {
       rbuflogd_write_log(log_msg);
     }
   }
-
-
-  while(!terminate_app) {
-    const int res = rbuflogd_consume(rbuf, log_msg, sizeof(log_msg)); 
-    if (res == 0) {
+  while (!terminate_app) {
+    const int consume_res = rbuflogd_consume(rbuf, log_msg, sizeof(log_msg));
+    if (consume_res == 0) {
       printf("%s\n", log_msg);
       rbuflogd_write_log(log_msg);
     }
-    usleep(1); 
   }
 
   rbuflogd_cleanup_shmem();
