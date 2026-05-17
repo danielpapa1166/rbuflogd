@@ -38,6 +38,7 @@ endif()
 
 add_library(rbuflogd_producer SHARED
   src/producer/producer.c
+  src/producer/logger.c
 )
 
 target_include_directories(rbuflogd_producer
