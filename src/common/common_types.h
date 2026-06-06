@@ -58,7 +58,7 @@ typedef struct {
 
 
 #define LINE_FORMAT "%s [%8llu ms] [%s] [%s] [%*.*s] [%*.*s] %s"
-#define LINE_FORMAT_DECODE "%s [%8llu ms] [%s] [%s] [%s] [%s] %s"
+#define LINE_FORMAT_DECODE "%s [%s ms] [%s] [%s] [%s] [%s] %s"
 
 #define TEST_LINE "2026.06.02 16:05:19.126 [ 8113422 ms] [7a2b741f] [   DEBUG] [ bkk_srv] [ req@th0] Handled request for stop_id: F02615, returned 8 arrivals, cache_status: HIT_FRESH in 3 us"
 

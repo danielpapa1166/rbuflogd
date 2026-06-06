@@ -10,6 +10,9 @@ extern "C" {
 int format_log_entry_to_log_line(const rbuf_entry_t * const entry, 
     const char * const boot_id, char * out_msg, size_t out_msg_sz); 
 
+int format_log_line_to_log_entry(const char * const log_line, 
+    rbuf_entry_t * const entry);
+    
 #ifdef __cplusplus
 }
 #endif

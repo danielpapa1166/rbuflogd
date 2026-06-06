@@ -1,6 +1,7 @@
 #define _DEFAULT_SOURCE
 
 #include "common_types.h"
+#include "log_line_format.h"
 #include "consumer.h"
 #include "log_sink.h"
 #include "shmem.h"
@@ -21,6 +22,15 @@ static volatile sig_atomic_t terminate_app = 0;
 
 
 int main(int argc, char * argv[]) {
+
+  rbuf_entry_t entry; 
+  format_log_line_to_log_entry(TEST_LINE, &entry); 
+  printf("Parsed log entry:\n");
+  printf("  realtime_ns: %lu\n", entry.realtime_ns);
+  printf("  monotonic_ns: %lu\n", entry.monotonic_ns);
+  printf("  producer_name: '%s'\n", entry.producer_name); 
+  printf("  level: %d\n", entry.level);
+
   rbuflogd_cli_config_t cli_config;
   const int cli_res = parse_cli_args(argc, argv, &cli_config);
   if (cli_res != 0) {
