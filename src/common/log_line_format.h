@@ -7,7 +7,7 @@ extern "C" {
 #include <string.h>
 #include "common_types.h"
 
-int format_log_line(const rbuf_entry_t * const entry, 
+int format_log_entry_to_log_line(const rbuf_entry_t * const entry, 
     const char * const boot_id, char * out_msg, size_t out_msg_sz); 
 
 #ifdef __cplusplus

@@ -1,5 +1,5 @@
+#define _POSIX_C_SOURCE 200809L // for time defs, define before any system header
 #include "rbuflogd/pub_common_types.h"
-#define _POSIX_C_SOURCE 200809L
 
 #include "consumer.h"
 #include "common_types.h"
@@ -50,7 +50,7 @@ int rbuflogd_format_internal_log(rbuf_entry_t * const entry,
   entry->realtime_ns = ((uint64_t) realtime_ts.tv_sec * 1000000000ULL) + (uint64_t) realtime_ts.tv_nsec;
   entry->monotonic_ns = ((uint64_t) monotonic_ts.tv_sec * 1000000000ULL) + (uint64_t) monotonic_ts.tv_nsec;
 
-  return format_log_line(entry, boot_id_cache, out_msg, out_msg_sz);
+  return format_log_entry_to_log_line(entry, boot_id_cache, out_msg, out_msg_sz);
 }
 
 int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz) {
@@ -74,5 +74,5 @@ int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz) {
     return -1;
   }
 
-  return format_log_line(&entry, boot_id_cache, out_msg, out_msg_sz);
+  return format_log_entry_to_log_line(&entry, boot_id_cache, out_msg, out_msg_sz);
 }

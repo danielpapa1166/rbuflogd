@@ -1,4 +1,4 @@
-#define _POSIX_C_SOURCE 200809L
+#define _POSIX_C_SOURCE 200809L // for time defs, define before any system header
 #include "log_line_format.h"
 
 #include "common_types.h"
@@ -39,7 +39,7 @@ static void format_realtime_ns(uint64_t realtime_ns, char * out, size_t out_sz) 
 }
 
 
-int format_log_line(const rbuf_entry_t * const entry, const char * const boot_id, char * out_msg, size_t out_msg_sz) {
+int format_log_entry_to_log_line(const rbuf_entry_t * const entry, const char * const boot_id, char * out_msg, size_t out_msg_sz) {
   if (entry == NULL || boot_id == NULL || out_msg == NULL || out_msg_sz == 0) {
     return -1;
   }
