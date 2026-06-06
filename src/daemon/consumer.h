@@ -7,12 +7,7 @@
 void rbuflogd_consumer_set_boot_id(const char * boot_id);
 void rbuflogd_set_minimum_log_level(rbuflogd_log_level_t level);
 int rbuflogd_consume(rbuf_t * rbuf, char * out_msg, size_t out_msg_sz);
-int rbuflogd_format_internal_log(
-	rbuflogd_log_level_t level,
-	const char * producer_name,
-	const char * category,
-	const char * msg,
-	char * out_msg,
-	size_t out_msg_sz);
+int rbuflogd_format_internal_log(rbuf_entry_t * const entry,    
+    char * const out_msg, size_t out_msg_sz);
 
 #endif /* RBUFLOGD_CONSUMER_H */

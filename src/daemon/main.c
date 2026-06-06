@@ -59,12 +59,15 @@ int main(int argc, char * argv[]) {
   }
 
   if (cli_config.log_init_success) {
-    const char * init_msg = "rbuflogd initialized successfully";
+    rbuf_entry_t entry = {
+      .level = RBUF_LOG_LEVEL_INFO, 
+      .producer_name = "rbuflogd", 
+      .category = "Init", 
+      .msg = "rbuflogd initialized successfully"
+    };
+
     if (rbuflogd_format_internal_log(
-        RBUF_LOG_LEVEL_INFO,
-        "rbuflogd",
-        "Init",
-        init_msg,
+        &entry, 
         log_msg,
         sizeof(log_msg)) == 0) {
       rbuflogd_write_log(log_msg);

@@ -16,6 +16,7 @@ set(RBUFLOGD_PUBLIC_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_library(rbuflogd_common STATIC
   src/common/shmem.c
   src/common/ring_buffer.c
+  src/common/log_line_format.c
 )
 
 target_include_directories(rbuflogd_common
