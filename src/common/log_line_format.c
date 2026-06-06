@@ -67,3 +67,30 @@ int format_log_entry_to_log_line(const rbuf_entry_t * const entry, const char * 
 
   return 0;
 }
+
+
+int format_log_line_to_log_entry(const char * const log_line, rbuf_entry_t * const entry) {
+  char time_buf_helper[RBUF_TIMESTAMP_STR_MAX_CHARS + 1];
+  unsigned long long mono_ms; 
+  char boot_id_helper[RBUF_BOOT_ID_MAX_CHARS + 1]; 
+  char level_helper[RBUF_LEVEL_MAX_CHARS + 1]; 
+
+
+  char producer_helper[RBUF_PRODUCER_ID_DISPLAY_CHARS]; 
+  char category_helper[RBUF_CATEGORY_DISPLAY_CHARS];
+  char message_helper[RBUF_MSG_MAX_CHARS];   
+
+  int disp_chars1, disp_chars2, disp_chars3, disp_chars4;  
+
+  int res = sscanf(log_line, LINE_FORMAT_DECODE, 
+    time_buf_helper, 
+    &mono_ms, 
+    boot_id_helper, 
+    level_helper, 
+    producer_helper, 
+    category_helper, 
+    message_helper);
+
+  printf("Decoded %d number of elements \n", res); 
+
+}
