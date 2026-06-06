@@ -57,5 +57,7 @@ typedef struct {
 } rbuf_t;
 
 
+const char * const LINE_FORMAT = "%s [%8llu ms] [%s] [%s] [%*.*s] [%*.*s] %s";
+
 #endif /* RBUFLOGD_COMMON_TYPES_H */
 

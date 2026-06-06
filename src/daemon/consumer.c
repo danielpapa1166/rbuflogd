@@ -85,7 +85,7 @@ static int format_log_line(
   snprintf(
     out_msg,
     out_msg_sz,
-    "%s [%8llu ms] [%s] [%s] [%*.*s] [%*.*s] %s",
+    LINE_FORMAT, // "%s [%8llu ms] [%s] [%s] [%*.*s] [%*.*s] %s",
     time_buf,
     (unsigned long long) mono_ms,
     boot_id_cache,
